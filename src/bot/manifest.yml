@@ -1,0 +1,5 @@
+applications:
+- name: cloud_comp_course
+  path: .
+  buildpack: nodejs_buildpack
+  memory: 128M
