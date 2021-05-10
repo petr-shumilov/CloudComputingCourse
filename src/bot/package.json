@@ -12,7 +12,8 @@
   "dependencies": {
     "express": "^4.17.1",
     "express-json": "^1.0.0",
-    "node-telegram-bot-api": "^0.51.0"
+    "guid": "0.0.12",
+    "node-telegram-bot-api": "^0.51.0",
+    "pg-promise": "^6.10.3"
   }
-
 }

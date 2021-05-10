@@ -1,0 +1,27 @@
+{
+  "telegram": {
+    "token": "",
+    "polling": true,
+    "webhook": {
+      "url": "",
+      "port": 8080
+    }
+  },
+  "storage": {
+    "db": {
+      "endpoint": {
+        "hostname": "",
+        "port": "",
+        "username": "",
+        "password": "",
+        "dbname": "",
+        "uri": "",
+        "schema": ""
+      },
+      "UsersTableName": "users",
+      "StateTableName": "states",
+      "MemoryTableName": "memory"
+    }
+  }
+}
+
