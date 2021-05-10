@@ -1,13 +1,13 @@
 const config            = require('./config/testenv.json');
-const User 				= require('./lib/User');
-const DB 				= require('./lib/DB');
-const Storage 			= require('./lib/Storage');
+const User              = require('./lib/User');
+const DB                = require('./lib/DB');
+const Storage           = require('./lib/Storage');
 const TelegramUtils     = require('./lib/TelegramUtils');
-const Utils 			= require('./lib/Utils');
+const Utils             = require('./lib/Utils');
 
 
-const STATE 			= require('./State');
-const COMMAND 			= require('./Command');
+const STATE             = require('./State');
+const COMMAND           = require('./Command');
 
 const TelegramBot       = require('node-telegram-bot-api');
 const express           = require('express');

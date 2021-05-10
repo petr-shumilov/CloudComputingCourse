@@ -1,6 +1,6 @@
-const db 					= require('./DB');
-const Storage 				= require('./Storage');
-const Guid 					= require('guid');
+const db                    = require('./DB');
+const Storage               = require('./Storage');
+const Guid                  = require('guid');
 
 class User {
 
@@ -178,7 +178,7 @@ class User {
 
     async Create() {
         try {
-            this.id	= Guid.raw().toString();
+            this.id = Guid.raw().toString();
             let newUser = {
                 id: this.id,
                 chatId: this.chatId

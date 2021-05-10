@@ -1,7 +1,7 @@
-const db 		 = require('./DB');
+const db         = require('./DB');
 const config     = require('./../config/testenv.json');
-const pgp 		 = db.$config.pgp;
-const STATE 	= require('./../State');
+const pgp        = db.$config.pgp;
+const STATE     = require('./../State');
 
 const SchemaName = config.storage.db.endpoint.schema || 'public';
 const UsersTableName = config.storage.db.UsersTableName;

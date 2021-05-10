@@ -1,4 +1,4 @@
-const COMMANDS 	= require('./../Command');
+const COMMANDS  = require('./../Command');
 
 class Utils {
     static isCommand (text) {
