@@ -67,7 +67,7 @@ const SKILLS = {
             age: {
                 question: "How old are you?",
                 isValid: (text) => {
-                    return parseInt(text);
+                    return !isNaN(parseFloat(text)) && !isNaN(text - 0);
                 }
             },
             position: {
@@ -119,6 +119,7 @@ Bot.on('message', async msg => {
                             if (Object.keys(memory).length === Object.keys(SKILLS.CHECK_YOUR_JOB.fields).length) {
 
                                 await user.SetState(STATE.PENDING.string).PushUpdates();
+                                await storage.MultipleInsertInMemoryByUserId(userId, {});
                                 await Bot.sendMessage(chatId, "I'm thinking...");
 
                                 const res = await GetAIServiceRequest(config.services.ai.url, '/predict', {
@@ -126,7 +127,6 @@ Bot.on('message', async msg => {
                                 });
 
                                 await user.SetState(STATE.IDLE.string).PushUpdates();
-                                await storage.MultipleInsertInMemoryByUserId(userId, {});
 
                                 Bot.sendMessage(chatId, `From my artificial experience, people who occur in a situation like you changes a job in ${res.payload['yes']} cases and stay in ${res.payload['no']} cases.\n\nTry again? Just /start`);
 
@@ -199,6 +199,7 @@ Bot.on('message', async msg => {
                     if (Object.keys(memory).length === Object.keys(SKILLS.CHECK_YOUR_JOB.fields).length) {
 
                         await user.SetState(STATE.PENDING.string).PushUpdates();
+                        await storage.MultipleInsertInMemoryByUserId(userId, {});
                         await Bot.sendMessage(chatId, "I'm thinking...");
 
                         const res = await GetAIServiceRequest(config.services.ai.url, '/predict', {
@@ -206,7 +207,6 @@ Bot.on('message', async msg => {
                         });
 
                         await user.SetState(STATE.IDLE.string).PushUpdates();
-                        await storage.MultipleInsertInMemoryByUserId(userId, {});
 
                         Bot.sendMessage(chatId, `From my artificial experience, people who occur in a situation like you changes a job in ${res.payload['yes']} cases and stay in ${res.payload['no']} cases.\n\nTry again? Just /start`);
                     } else {
