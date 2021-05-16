@@ -11,6 +11,7 @@ const COMMAND           = require('./Command');
 
 const TelegramBot       = require('node-telegram-bot-api');
 const express           = require('express');
+const axios             = require('axios');
 
 
 
@@ -42,6 +43,17 @@ function BotSetup() {
 
 const Bot = BotSetup();
 
+
+async function GetAIServiceRequest(url, endpoint, data) {
+    let query = '';
+    for (const key in data) {
+        if (query !== "") {
+            query += "&";
+        }
+        query += `${key}=${encodeURIComponent(data[key])}`;
+    }
+    return (await axios.get(`${url}/${endpoint}?${query}`)).data;
+}
 
 const SKILLS = {
     CHECK_YOUR_JOB: {
@@ -106,10 +118,18 @@ Bot.on('message', async msg => {
 
                             if (Object.keys(memory).length === Object.keys(SKILLS.CHECK_YOUR_JOB.fields).length) {
 
-                                await storage.MultipleInsertInMemoryByUserId(userId, {});
-                                await user.SetState(STATE.IDLE.string).PushUpdates();
+                                await user.SetState(STATE.PENDING.string).PushUpdates();
+                                await Bot.sendMessage(chatId, "I'm thinking...");
 
-                                Bot.sendMessage(chatId, `Finished: ${JSON.stringify(memory)}\n\nTry again? Just /start`);
+                                const res = await GetAIServiceRequest(config.services.ai.url, '/predict', {
+                                    age: memory.age
+                                });
+
+                                await user.SetState(STATE.IDLE.string).PushUpdates();
+                                await storage.MultipleInsertInMemoryByUserId(userId, {});
+
+                                Bot.sendMessage(chatId, `From my artificial experience, people who occur in a situation like you changes a job in ${res.payload['yes']} cases and stay in ${res.payload['no']} cases.\n\nTry again? Just /start`);
+
                             } else {
 
                                 let nextProcessingFieldName;
@@ -174,13 +194,21 @@ Bot.on('message', async msg => {
 
                     let memory = await storage.GetMemoryByUserId(userId);
                     memory[processingFieldName] = msg.text;
+                    await storage.MultipleInsertInMemoryByUserId(userId, memory)
 
                     if (Object.keys(memory).length === Object.keys(SKILLS.CHECK_YOUR_JOB.fields).length) {
 
-                        await storage.MultipleInsertInMemoryByUserId(userId, {});
-                        await user.SetState(STATE.IDLE.string).PushUpdates();
+                        await user.SetState(STATE.PENDING.string).PushUpdates();
+                        await Bot.sendMessage(chatId, "I'm thinking...");
 
-                        Bot.sendMessage(chatId, `Finished: ${JSON.stringify(memory)}\n\nTry again? Just /start`);
+                        const res = await GetAIServiceRequest(config.services.ai.url, '/predict', {
+                           age: memory.age
+                        });
+
+                        await user.SetState(STATE.IDLE.string).PushUpdates();
+                        await storage.MultipleInsertInMemoryByUserId(userId, {});
+
+                        Bot.sendMessage(chatId, `From my artificial experience, people who occur in a situation like you changes a job in ${res.payload['yes']} cases and stay in ${res.payload['no']} cases.\n\nTry again? Just /start`);
                     } else {
 
                         let nextProcessingFieldName;
@@ -192,15 +220,8 @@ Bot.on('message', async msg => {
                             }
                         }
 
-                        await storage.Transaction((_storage) => {
-                            return [
-                                _storage.MultipleInsertInMemoryByUserId(userId, memory),
-                                _storage.SetSkillProcessingFieldByUserId(userId, nextProcessingFieldName)
-                            ];
-                        });
-
+                        await storage.SetSkillProcessingFieldByUserId(userId, nextProcessingFieldName);
                     }
-
 
                 } catch (e) {
                     await (user.SetState(STATE.IDLE.string).PushUpdates());
@@ -211,6 +232,24 @@ Bot.on('message', async msg => {
                     }
                 }
 
+                break;
+
+            case STATE.PENDING.string:
+                try {
+                    if (TelegramUtils.isTextMessage(msg) === false) {
+                        await Bot.sendMessage(chatId, "Sorry, but I understand only text (=");
+                        break;
+                    }
+                    await Bot.sendMessage(chatId, "I'm still thinking...");
+                }
+                catch (e) {
+                    await user.SetState(STATE.IDLE.string).PushUpdates();
+
+                    console.log(`[Telegram][IDLE]: \n${e.message}\n${e.stack}\n\n`);
+                    if (e instanceof Error) {
+                        throw new Error(`[Telegram][IDLE]: error \n${e.message}\n${e.stack}\n\n`);
+                    }
+                }
                 break;
         }
     } catch (e) {

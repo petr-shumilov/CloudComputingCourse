@@ -22,6 +22,11 @@
       "StateTableName": "states",
       "MemoryTableName": "memory"
     }
+  },
+  "services": {
+    "ai": {
+      "url": "http://localhost:5000/"
+    }
   }
 }
 
