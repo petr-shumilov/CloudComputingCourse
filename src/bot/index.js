@@ -33,8 +33,9 @@ function BotSetup() {
             res.sendStatus(200);
         });
 
-        expressApp.listen(config.telegram.webhook.port, () => {
-            console.log(`[expressApp]: Express server is listening on ${config.telegram.webhook.port}`);
+        const port = process.env.PORT || config.telegram.webhook.port
+        expressApp.listen(port, () => {
+            console.log(`[expressApp]: Express server is listening on ${port}`);
         });
 
         return bot;
