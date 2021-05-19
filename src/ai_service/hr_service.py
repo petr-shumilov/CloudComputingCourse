@@ -9,7 +9,6 @@ import pickle
 import sys
 from flask import Flask, request, jsonify
 import typing as t
-import time
 import os
 
 MODEL_FILEPATH = "./data/model.sav"
@@ -101,7 +100,6 @@ app = Flask(__name__)
 @app.route('/predict')
 def get_predict():
     try:
-        time.sleep(10)
         age = request.args.get('age')
 
         res = predictBy(age)
