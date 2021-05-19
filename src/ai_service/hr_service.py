@@ -9,6 +9,8 @@ import pickle
 import sys
 from flask import Flask, request, jsonify
 import typing as t
+import time
+import os
 
 MODEL_FILEPATH = "./data/model.sav"
 TRAIN_FILEPATH = "./data/Titanic/train.csv"
@@ -99,6 +101,7 @@ app = Flask(__name__)
 @app.route('/predict')
 def get_predict():
     try:
+        time.sleep(10)
         age = request.args.get('age')
 
         res = predictBy(age)
@@ -138,8 +141,9 @@ def get_train():
 if __name__ == '__main__':
     #train()
     #predictBy(30)
+    port = int(os.environ.get('PORT', 5000))
 
-    app.run(debug=True, port=5000)
+    app.run(debug=True, port=port)
     
     
 
